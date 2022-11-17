@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+#include "glad/gl.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,8 +7,6 @@
 unsigned int createShader(const char* source, const size_t fs_offset, const unsigned int d_size, const unsigned int i_size)
 {
     char* vs = decompress(source, d_size, i_size), *fs = vs + fs_offset;
-
-    //printf("%s\n\n%s\n", vs, fs);
 
     unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, (const char * const*)&vs, NULL);

@@ -1,7 +1,10 @@
-#include <GL/glew.h>
+#include "glad/gl.h"
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "csweeper.h"
 
@@ -35,7 +38,7 @@ int main(int argc, char** argv)
 
     glfwMakeContextCurrent(window);
 
-    if(glewInit() != GLEW_OK) { return -1; }
+    if (!gladLoaderLoadGL()) { return -1; }
 
     unsigned int atlas = createAtlas(ATLAS, ATLAS_WIDTH, ATLAS_HEIGTH, sizeof(ATLAS));
 
@@ -53,7 +56,7 @@ int main(int argc, char** argv)
     glBindVertexArray(game.squareVAO);
 
     unsigned int viewloc = glGetUniformLocation(game.shader, "view");
-    
+
     //#006fb2
     glClearColor(00.f/255.f, (float)(0x6f)/255.f, (float)(0xb2)/255.f, 1.0f);
 
@@ -277,6 +280,8 @@ int main(int argc, char** argv)
     }
 
     deleteGame(&game);
+    
+    gladLoaderUnloadGL();
 
     glfwTerminate();
     return 0;

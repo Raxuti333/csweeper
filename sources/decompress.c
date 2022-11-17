@@ -3,7 +3,7 @@
 
 unsigned char* decompress(const unsigned char* compressed, const unsigned int d_size, const unsigned int i_size)
 {
-    unsigned char* data = malloc(i_size);
+    unsigned char* data = calloc(i_size, 1);
 
     z_stream infstream;
     infstream.zalloc = Z_NULL;
