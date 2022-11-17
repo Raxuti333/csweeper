@@ -40,7 +40,7 @@ typedef struct Game
     /* heigth of minefield */
     unsigned int heigth;
 
-    /* wh = width * heigth */
+    /* width * heigth */
     unsigned int wh;
 
     /* mine count */
@@ -164,5 +164,30 @@ UI initUI(const char* s1, const size_t fs_offset1, const unsigned int d_size1, c
  * @param ui pointer to UI struct
  */
 void deleteUi(UI* ui);
+
+/**
+ * @brief
+ * checks if any tile is clicked returns -1 if no else returns tile index
+ * 
+ * @param game pointer to game struct
+ * @param mouse mouse position
+ * @return returns -1 if not tile is clicked or open tiles is clicked else returns tile index
+ */
+unsigned int isTileClicked(Game* game, vec2 mouse);
+
+/**
+ * @brief 
+ * sets game to its failed state
+ * @param game pointer to game struct
+ */
+void gameFailed(Game* game);
+
+/**
+ * @brief 
+ * opens tile and checks for game clear condition and opens empty tiles 
+ * @param game pointer to game struct
+ * @param i index of tile
+ */
+void openTile(Game* game, const unsigned int i);
 
 #endif
