@@ -24,35 +24,38 @@ int main(int argc, char** argv)
 {
     GLFWwindow* window;
 
+    /* init glfw*/
     if (!glfwInit()) { return -1; }
 
-    window = glfwCreateWindow(640, 480, "csweep", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "c-sweeper", NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
 
     glfwMakeContextCurrent(window);
 
+    /* glad load opengl extensions */
     if (!gladLoaderLoadGL()) { return -1; }
 
+    /* create and bind texture atlas */
     unsigned int atlas = createAtlas(ATLAS, ATLAS_WIDTH, ATLAS_HEIGTH, sizeof(ATLAS));
+    glBindTexture(GL_TEXTURE_2D, atlas);
 
+    /* init game */
     game = InitGame(FIELD, FIELD_FS_OFFSET, sizeof(FIELD), FIELD_I_LENGTH, screen);
+    /* init menu */
     game.menu = initUI(BACKGROUND, BACKGROUND_FS_OFFSET, sizeof(BACKGROUND), BACKGROUND_I_LENGTH, TEXT, TEXT_FS_OFFSET, sizeof(TEXT), TEXT_I_LENGTH);
 
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
 
+    /* Enable blending for transparency */
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindTexture(GL_TEXTURE_2D, atlas);
-    glBindVertexArray(game.squareVAO);
+    /* background color #006fb2 */
+    glClearColor((float)(0x00)/255.f, (float)(0x6f)/255.f, (float)(0xb2)/255.f, 1.0f);
 
-    unsigned int viewloc = glGetUniformLocation(game.shader, "view");
-
-    //#006fb2
-    glClearColor(00.f/255.f, (float)(0x6f)/255.f, (float)(0xb2)/255.f, 1.0f);
-
+    /* last mouse position for allowing dragging the view */
     vec2 lastMouse;
 
     int lastFrame_left;
@@ -72,7 +75,7 @@ int main(int argc, char** argv)
         }
         else if(game.state < GAME_STATE_IN_MENU)
         {
-            glUniform4fv(viewloc, 1, game.camera);
+            glUniform4fv(game.uniformLocations[0], 1, game.camera);
 
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, game.wh);
 

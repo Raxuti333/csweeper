@@ -49,7 +49,9 @@ typedef struct Game
     /* state of game */
     unsigned int state;
 
-    unsigned int instanceVBO, squareVBO, squareVAO, shader;
+    unsigned int instanceVBO, squareVBO, squareVAO;
+
+    unsigned int shader, uniformLocations[2];
 
     /* mine field array*/
     float* field;
