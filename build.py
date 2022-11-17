@@ -14,7 +14,7 @@ CC_WIN = "/usr/bin/x86_64-w64-mingw32-gcc"
 CFLAGS = "-O2 -march=native -Iinclude -Itmp"
 
 # C libraries
-LFLAGS = "-lglfw -lGL -lGLU -lGLEW -lm -lz"
+LFLAGS = "-lglfw -lGL -lGLU -lm -lz"
 LFLAGS_WIN = "-static -lglfw3 -lopengl32 -lgdi32 -lm -lz -Wl,-subsystem,windows"
 
 # C sources
