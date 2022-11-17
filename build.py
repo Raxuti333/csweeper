@@ -164,17 +164,19 @@ def genTextureHeader(path: str):
     atlas.close()
     return 1
 
-def clean():
+def clean_tmp():
     if os.path.exists(objectPath):
         shutil.rmtree(objectPath)
+
+def clean_exe():
     if os.path.exists(EXE):
         os.remove(EXE)
-    elif os.path.exists(EXE + '.exe'):
+    if os.path.exists(EXE + '.exe'):
         os.remove(EXE + '.exe')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--threads", help="Cpu's used for compiling", type=int)
-parser.add_argument("--clean", help="Removes generated directories and files", action="store_true")
+parser.add_argument("--clean", help="Removes generated directories and files", type=str)
 parser.add_argument("--headers", help="Generates development headers", action="store_true")
 parser.add_argument("--win", help="Compiles for windows", action="store_true")
 args = parser.parse_args()
@@ -193,8 +195,13 @@ if args.headers:
         print("generated texture.h")
     else: 
         print("couldnt generate texture.h")
-elif args.clean:
-    clean()
+elif args.clean == "tmp":
+    clean_tmp()
+elif args.clean == "exe":
+    clean_exe()
+elif args.clean == "all":
+    clean_tmp()
+    clean_exe()
 else:
     if args.threads != None and args.threads > 1:
         compileProcesses = args.threads
