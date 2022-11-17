@@ -56,6 +56,8 @@ typedef struct Game
 
     /* start and end time of game */
     time_t startTime, endTime;
+
+    UI menu;
 } Game;
 
 /**

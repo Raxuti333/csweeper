@@ -57,6 +57,8 @@ void deleteGame(Game* game)
 
     glDeleteProgram(game->shader);
 
+    deleteUi(&game->menu);
+
     if(game->field != NULL) { free(game->field); game->field = NULL; }
 }
 

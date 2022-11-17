@@ -8,7 +8,6 @@ vec4 view = {0.0f, 0.0f, 10.f, 480.f/640.f};
 
 vec2 screen = {640.f, 480.f};
 
-UI ui;
 Game game;
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -39,7 +38,7 @@ int main(int argc, char** argv)
     unsigned int atlas = createAtlas(ATLAS, ATLAS_WIDTH, ATLAS_HEIGTH, sizeof(ATLAS));
 
     game = InitGame(FIELD, FIELD_FS_OFFSET, sizeof(FIELD), FIELD_I_LENGTH);
-    ui = initUI(BACKGROUND, BACKGROUND_FS_OFFSET, sizeof(BACKGROUND), BACKGROUND_I_LENGTH, TEXT, TEXT_FS_OFFSET, sizeof(TEXT), TEXT_I_LENGTH);
+    game.menu = initUI(BACKGROUND, BACKGROUND_FS_OFFSET, sizeof(BACKGROUND), BACKGROUND_I_LENGTH, TEXT, TEXT_FS_OFFSET, sizeof(TEXT), TEXT_I_LENGTH);
 
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
@@ -67,9 +66,9 @@ int main(int argc, char** argv)
 
         if(game.state == GAME_STATE_STARTING)
         {
-            unsigned int width = ftou(ui.inputs[0].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data)));
-            unsigned int heigth = ftou(ui.inputs[1].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data)));
-            unsigned int mines = ftou(ui.inputs[2].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data)));
+            unsigned int width = ftou(game.menu.inputs[0].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)));
+            unsigned int heigth = ftou(game.menu.inputs[1].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)));
+            unsigned int mines = ftou(game.menu.inputs[2].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)));
 
             if(!startGame(&game, width, heigth, mines)) { game.state = 2; }
         }
@@ -170,19 +169,19 @@ int main(int argc, char** argv)
                                 {
                                     if(tmp[t] == '.') 
                                     {
-                                        ui.time.text_data[t] = FONT_DOT;
+                                        game.menu.time.text_data[t] = FONT_DOT;
                                     }
                                     else if(tmp[t] == 'T')
                                     {
-                                        ui.time.text_data[t] = FONT_T;
+                                        game.menu.time.text_data[t] = FONT_T;
                                     }
                                     else if(tmp[t] == ':')
                                     {
-                                        ui.time.text_data[t] = FONT_CL;
+                                        game.menu.time.text_data[t] = FONT_CL;
                                     }
                                     else if(tmp[t] >= '0' && tmp[t] <= '9')
                                     {
-                                        ui.time.text_data[t] = (float)(tmp[t] - '0');
+                                        game.menu.time.text_data[t] = (float)(tmp[t] - '0');
                                     }
                                 }
                             }
@@ -245,25 +244,25 @@ int main(int argc, char** argv)
         }
         else
         {
-            glUseProgram(ui.bgShader);
-            glBindVertexArray(ui.elementVAO);
-            glUniform1f(ui.shaderLocation[3], view[3]);
+            glUseProgram(game.menu.bgShader);
+            glBindVertexArray(game.menu.elementVAO);
+            glUniform1f(game.menu.shaderLocation[3], view[3]);
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
-            glUseProgram(ui.textShader);
-            glBindVertexArray(ui.textVAO);
+            glUseProgram(game.menu.textShader);
+            glBindVertexArray(game.menu.textVAO);
 
-            glUniform1f(ui.shaderLocation[2], view[3]);
-            for(unsigned int i = 0; i < (sizeof(ui.inputs)/sizeof(*ui.inputs)); ++i)
+            glUniform1f(game.menu.shaderLocation[2], view[3]);
+            for(unsigned int i = 0; i < (sizeof(game.menu.inputs)/sizeof(*game.menu.inputs)); ++i)
             {
-                glUniform3fv(ui.shaderLocation[0], 1, ui.inputs[i].XYS);
-                glUniform1fv(ui.shaderLocation[1], 6, ui.inputs[i].input_data);
+                glUniform3fv(game.menu.shaderLocation[0], 1, game.menu.inputs[i].XYS);
+                glUniform1fv(game.menu.shaderLocation[1], 6, game.menu.inputs[i].input_data);
 
                 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 6);
             }
 
-            glUniform3fv(ui.shaderLocation[0], 1, ui.time.XYS);
-            glUniform1fv(ui.shaderLocation[1], 6, ui.time.text_data);
+            glUniform3fv(game.menu.shaderLocation[0], 1, game.menu.time.XYS);
+            glUniform1fv(game.menu.shaderLocation[1], 6, game.menu.time.text_data);
 
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 6);
 
@@ -276,7 +275,6 @@ int main(int argc, char** argv)
     }
 
     deleteGame(&game);
-    deleteUi(&ui);
 
     gladLoaderUnloadGL();
 
@@ -292,36 +290,36 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if(key >= GLFW_KEY_0 && key <= GLFW_KEY_9 && ui.inputs[ui.focus].i != 6 && action == GLFW_PRESS)
+    if(key >= GLFW_KEY_0 && key <= GLFW_KEY_9 && game.menu.inputs[game.menu.focus].i != 6 && action == GLFW_PRESS)
     {
-        ui.inputs[ui.focus].input_data[ui.inputs[ui.focus].i++] = (float)(key - GLFW_KEY_0);
+        game.menu.inputs[game.menu.focus].input_data[game.menu.inputs[game.menu.focus].i++] = (float)(key - GLFW_KEY_0);
     }
     if(key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS)
     {
-        if(ui.inputs[ui.focus].i != 1) { --ui.inputs[ui.focus].i; }
-        ui.inputs[ui.focus].input_data[ui.inputs[ui.focus].i] = FONT_CL;
+        if(game.menu.inputs[game.menu.focus].i != 1) { --game.menu.inputs[game.menu.focus].i; }
+        game.menu.inputs[game.menu.focus].input_data[game.menu.inputs[game.menu.focus].i] = FONT_CL;
     }
     if(key == GLFW_KEY_UP && action == GLFW_PRESS)
     {
-        if(ui.focus != 0) 
+        if(game.menu.focus != 0) 
         { 
-            ui.inputs[ui.focus].input_data[0] = OPEN_TILE; 
-            ui.focus--; 
-            ui.inputs[ui.focus].input_data[0] = ARROW;
+            game.menu.inputs[game.menu.focus].input_data[0] = OPEN_TILE; 
+            game.menu.focus--; 
+            game.menu.inputs[game.menu.focus].input_data[0] = ARROW;
         }
     }
     if(key == GLFW_KEY_DOWN && action == GLFW_PRESS)
     {
-        if(ui.focus != 2) 
+        if(game.menu.focus != 2) 
         { 
-            ui.inputs[ui.focus].input_data[0] = OPEN_TILE; 
-            ui.focus++; 
-            ui.inputs[ui.focus].input_data[0] = ARROW;
+            game.menu.inputs[game.menu.focus].input_data[0] = OPEN_TILE; 
+            game.menu.focus++; 
+            game.menu.inputs[game.menu.focus].input_data[0] = ARROW;
         }
     }
     if(key == GLFW_KEY_ENTER && action == GLFW_PRESS && game.state == 2)
     {
-        game.state = 3;
+        game.state = GAME_STATE_STARTING;
     }
 }
 
