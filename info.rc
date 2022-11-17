@@ -1,0 +1,25 @@
+id ICON "icon.ico"
+
+1 VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  0,0,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "080904E4"
+    BEGIN
+      VALUE "CompanyName", "roftware"
+      VALUE "FileDescription", "csweeper is a reimagnation of minesweeper"
+      VALUE "FileVersion", "1.0"
+      VALUE "InternalName", "csweep"
+      VALUE "LegalCopyright", "Rixu"
+      VALUE "OriginalFilename", "csweep.exe"
+      VALUE "ProductName", "csweeper"
+      VALUE "ProductVersion", "0.0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x809, 1252
+  END
+END

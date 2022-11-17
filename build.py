@@ -30,6 +30,8 @@ TSRC = "atlas.png"
 # Executable filename
 EXE = "csweep"
 
+RESOURCE = "info"
+
 # Object file build path
 objectPath = "tmp"
 
@@ -59,7 +61,10 @@ def build():
     for obj in cObjects:
         if obj.find('.o') != -1:
             stringfy += " " + objectPath + '/' + obj
-    cArgs : str = CC + " " + CFLAGS + " -o " + EXE + stringfy + " " + LFLAGS
+    if args.win:
+        cArgs : str = CC + " " + CFLAGS + " -o " + EXE + stringfy + " " + RESOURCE + ".res " + LFLAGS
+    else:
+        cArgs : str = CC + " " + CFLAGS + " -o " + EXE + stringfy + " " + LFLAGS
     print(cArgs)
     subprocess.run(cArgs.split(' '), stdout=subprocess.PIPE)
     print("compiled in", (time.time() - start_time))
@@ -167,12 +172,17 @@ def genTextureHeader(path: str):
 def clean_tmp():
     if os.path.exists(objectPath):
         shutil.rmtree(objectPath)
+    if os.path.exists(RESOURCE + ".res"):
+        os.remove(RESOURCE + ".res")
 
 def clean_exe():
     if os.path.exists(EXE):
         os.remove(EXE)
     if os.path.exists(EXE + '.exe'):
         os.remove(EXE + '.exe')
+
+def genResource():
+    subprocess.run(["windres", RESOURCE + ".rc", "-O", "coff", RESOURCE + ".res"], stdout=subprocess.PIPE)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--threads", help="Cpu's used for compiling", type=int)
@@ -184,6 +194,7 @@ args = parser.parse_args()
 if args.win:
     CC = CC_WIN
     LFLAGS = LFLAGS_WIN
+    genResource()
     print("target platform windows")
 
 if args.headers:
