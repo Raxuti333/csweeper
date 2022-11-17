@@ -20,7 +20,7 @@
 #define MINE            (float)-0xA
 #define FLAG            (float)0xB
 #define CLOSED_TILE     (float)0xC
-#define OPEN_TILE       (float)0xD
+#define OPEN_TILE       (float)0x3F
 #define FONT_T          (float)0xE
 #define FONT_CL         (float)0xF
 #define FONT_DOT        (float)0x10

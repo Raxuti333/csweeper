@@ -15,14 +15,14 @@ typedef struct Text
 {
     float text_data[6];
 
-    vec4 info;
+    vec3 info;
 } Text;
 
 typedef struct UI 
 {
     unsigned int focus;
 
-    unsigned int shaderLocation[2];
+    unsigned int shaderLocation[4];
 
     Input inputs[3];
 
