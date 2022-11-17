@@ -2,10 +2,6 @@
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #include "csweeper.h"
 
 vec4 view = {0.0f, 0.0f, 10.f, 480.f/640.f};
@@ -156,7 +152,7 @@ int main(int argc, char** argv)
 
                             for(unsigned int k = 0; k < game.wh; ++k)
                             {
-                                if(game.field[k] == CLOSED_TILE) { ++clear; }
+                                if(game.field[k] == CLOSED_TILE || game.field[k] == FLAG) { ++clear; }
                             }
 
                             if(clear == 0)
