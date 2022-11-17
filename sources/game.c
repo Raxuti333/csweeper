@@ -85,9 +85,7 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
         game->field[index] *= -1.f; 
     }
 
-    float tmp[4] = {0.0f, 0.0f, (float)width, (float)heigth };
-
-    glUniform4fv(glGetUniformLocation(game->shader, "field"), 1, tmp);
+    glUniform2f(glGetUniformLocation(game->shader, "field"), (float)width, (float)heigth);
 
     glBindVertexArray(game->squareVAO);
 
@@ -101,7 +99,7 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
 
 int checkTile(const unsigned int i, Game* game)
 {
-    if(i < 0 || i >= game->wh) { return 0; }
+    if(i < 0 || i > game->wh - 1) { return 0; }
 
     int num = 0;
 
@@ -109,6 +107,7 @@ int checkTile(const unsigned int i, Game* game)
     if(i < game->wh - game->width && game->field[i + game->width] < 0) { ++num; }
     if(i != 0 && i % game->width != 0 && game->field[i - 1] < 0) { ++num; }
     if(i != game->wh - 1 && (i + 1) % game->width != 0 && game->field[i + 1] < 0) { ++num; }
+
     if(i > game->width && i % game->width != 0 && game->field[i - game->width - 1] < 0) { ++num; }
     if(i >= game->width && (i + 1) % game->width != 0 && game->field[i - game->width + 1] < 0) { ++num; }
     if(i < game->wh - game->width && (i + 1) % game->width != 0 && game->field[i + game->width + 1] < 0) { ++num; }
@@ -119,65 +118,133 @@ int checkTile(const unsigned int i, Game* game)
 
 void nextTile(const unsigned int i, Game* game)
 {
-    if(i < 0 || i >= game->wh) { return; }
+    if(i < 0 || i > game->wh - 1) { return; }
 
-    if(i >= game->width && game->field[i - game->width] != OPEN_TILE && game->field[i - game->width] > 0) 
+    if(i >= game->width && game->field[i - game->width] == CLOSED_TILE)
     {
-        int num = checkTile(i - game->width, game);
+        int j = i - game->width;
+        int num = checkTile(j, game);
 
         if(!num)
         {
-            game->field[i - game->width] = OPEN_TILE;
-            nextTile(i - game->width, game); 
+            game->field[j] = OPEN_TILE;
+            nextTile(j, game);
         }
         else
         {
-            game->field[i - game->width] = num;
+            game->field[j] = (float)num;
         }
     }
 
-    if(i < game->wh - game->width && game->field[i + game->width] != OPEN_TILE && game->field[i + game->width] > 0) 
+    if(i < game->wh - game->width && game->field[i + game->width] == CLOSED_TILE) 
     { 
-        int num = checkTile(i + game->width, game);
+        int j = i + game->width;
+        int num = checkTile(j, game);
 
         if(!num)
         {
-            game->field[i + game->width] = OPEN_TILE;
-            nextTile(i + game->width, game); 
+            game->field[j] = OPEN_TILE;
+            nextTile(j, game);
         }
         else
         {
-            game->field[i + game->width] = num;
+            game->field[j] = (float)num;
         }
     }
 
-    if(i != 0 && i % game->width && game->field[i - 1] != OPEN_TILE && game->field[i - 1] > 0) 
-    { 
-        int num = checkTile(i - 1, game);
+    if(i != 0 && i % game->width != 0 && game->field[i - 1] == CLOSED_TILE) 
+    {
+        int j = i - 1;
+        int num = checkTile(j, game);
 
         if(!num)
         {
-            game->field[i - 1] = OPEN_TILE;
-            nextTile(i - 1, game); 
+            game->field[j] = OPEN_TILE;
+            nextTile(j, game);
         }
         else
         {
-            game->field[i - 1] = num;
+            game->field[j] = (float)num;
         }
     }
 
-    if(i != game->wh - 1 && (i + 1) % game->width != 0 && game->field[i + 1] != OPEN_TILE && game->field[i + 1] > 0) 
-    { 
-        int num = checkTile(i + 1, game);
+    if(i != game->wh - 1 && (i + 1) % game->width != 0 && game->field[i + 1] == CLOSED_TILE) 
+    {
+        int j = i + 1;
+        int num = checkTile(j, game);
 
         if(!num)
         {
-            game->field[i + 1] = OPEN_TILE;
-            nextTile(i + 1, game); 
+            game->field[j] = OPEN_TILE;
+            nextTile(j, game);
         }
         else
         {
-            game->field[i + 1] = num;
+            game->field[j] = (float)num;
+        }
+    }
+
+    if(i > game->width && i % game->width != 0 && game->field[i - game->width - 1] == CLOSED_TILE) 
+    {
+        int j = i - game->width - 1;
+        int num = checkTile(j, game);
+
+        if(!num)
+        {
+            game->field[j] = OPEN_TILE;
+            nextTile(j, game);
+        }
+        else
+        {
+            game->field[j] = (float)num;
+        }
+    }
+
+    if(i >= game->width && (i + 1) % game->width != 0 && game->field[i - game->width + 1] == CLOSED_TILE) 
+    {
+        int j = i - game->width + 1;
+        int num = checkTile(j, game);
+
+        if(!num)
+        {
+            game->field[j] = OPEN_TILE;
+            nextTile(j, game);
+        }
+        else
+        {
+            game->field[j] = (float)num;
+        }
+    }
+
+    if(i < game->wh - game->width && (i + 1) % game->width != 0 && game->field[i + game->width + 1] == CLOSED_TILE) 
+    {
+        int j = i + game->width + 1;
+        int num = checkTile(j, game);
+
+        if(!num)
+        {
+            game->field[j] = OPEN_TILE;
+            nextTile(j, game);
+        }
+        else
+        {
+            game->field[j] = (float)num;
+        }
+    }
+    
+    if(i < game->wh - game->width && i % game->width != 0 && game->field[i + game->width - 1] == CLOSED_TILE) 
+    {
+        int j = i + game->width - 1;
+        int num = checkTile(j, game);
+
+        if(!num)
+        {
+            game->field[j] = OPEN_TILE;
+            nextTile(j, game);
+        }
+        else
+        {
+            game->field[j] = (float)num;
         }
     }
 }

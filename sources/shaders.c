@@ -8,10 +8,11 @@ unsigned int createShader(const char* source, const size_t fs_offset, const unsi
 {
     char* vs = decompress(source, d_size, i_size), *fs = vs + fs_offset;
 
+    //printf("%s\n\n%s\n", vs, fs);
+
     unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, (const char * const*)&vs, NULL);
     glCompileShader(vertex);
-
     {
         GLint success;
         GLchar infoLog[1024];

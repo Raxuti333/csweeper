@@ -7,13 +7,14 @@
 
 vec4 view = {0.0f, 0.0f, 10.f, 480.f/640.f};
 
-vec2 screen;
+vec2 screen = {640.f, 480.f};
 
 UI ui;
 Game game;
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void window_size_callback(GLFWwindow* window, int x, int y);
 unsigned int ftou(float* v, unsigned int l);
 
 inline int inSquare(vec2 m, vec2 a, vec2 b)
@@ -43,6 +44,7 @@ int main(int argc, char** argv)
 
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -51,8 +53,9 @@ int main(int argc, char** argv)
     glBindVertexArray(game.squareVAO);
 
     unsigned int viewloc = glGetUniformLocation(game.shader, "view");
-     
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    
+    //#006fb2
+    glClearColor(00.f/255.f, (float)(0x6f)/255.f, (float)(0xb2)/255.f, 1.0f);
 
     vec2 lastMouse;
 
@@ -87,8 +90,8 @@ int main(int argc, char** argv)
                 if(lastMouse[0] == 0 && lastMouse[1] == 0);
                 else
                 {
-                    view[0] -= (xpos - lastMouse[0]) / 50.f;
-                    view[1] += (ypos - lastMouse[1]) / 50.f;
+                    view[0] -= ((xpos - lastMouse[0]) / 50.f) / (screen[0] / 300.f);
+                    view[1] += ((ypos - lastMouse[1]) / 50.f) / (screen[1] / 300.f);
                 }
 
                 lastMouse[0] = xpos;
@@ -104,23 +107,21 @@ int main(int argc, char** argv)
             int thisFrame_left = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
             int thisFrame_right = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
 
-            if(game.state == 1 && thisFrame_left != GLFW_PRESS && thisFrame_left != lastFrame_left)
+            if(game.state == 1 && thisFrame_left != GLFW_RELEASE && thisFrame_left != lastFrame_left)
             {
                 double xpos, ypos;
                 glfwGetCursorPos(window, &xpos, &ypos);
 
                 float fieldz = (float)game.width;
-                float fieldx = 0.0f;
-                float fieldy = 0.0f;
 
-                vec2 m = {(xpos - 320.f) / (320.f), (ypos - 240.f) / (240.f)};
+                vec2 m = {(xpos - screen[0] / 2.f) / (screen[0] / 2.f), (ypos - screen[1] / 2.f) / (screen[1] / 2.f)};
 
                 for(unsigned int i = 0; i < game.wh; ++i)
                 {
                     float j = (float)i;
 
-                    vec2 a = {((-0.5f + (j - fieldz * floorf(j / fieldz)) + fieldx) * view[3] - view[0]) / view[2] , (-0.5 - floorf(j / fieldz) + fieldy + view[1]) / view[2] };
-                    vec2 b = {((0.5f + (j - fieldz * floorf(j / fieldz)) + fieldx) * view[3] - view[0]) / view[2] , (0.5 - floorf(j / fieldz) + fieldy + view[1]) / view[2]  };
+                    vec2 a = {((-0.5f + (j - fieldz * floorf(j / fieldz))) * view[3] - view[0]) / view[2] , (-0.5 - floorf(j / fieldz) + view[1]) / view[2] };
+                    vec2 b = {((0.5f + (j - fieldz * floorf(j / fieldz))) * view[3] - view[0]) / view[2] , (0.5 - floorf(j / fieldz) + view[1]) / view[2]  };
 
                     if(inSquare(m, a, b)) 
                     {
@@ -135,18 +136,15 @@ int main(int argc, char** argv)
                             game.state = 0;
                             game.endTime = 0;
                         }
-                        else 
+                        else if(game.field[i] != OPEN_TILE)
                         { 
                             unsigned int num = checkTile(i, &game);
 
                             if(!num) 
-                            { 
+                            {
                                 game.field[i] = OPEN_TILE; 
 
-                                if(i >= game.width) { nextTile(i - game.width, &game); }
-                                if(i < game.wh) { nextTile(i + game.width, &game); }
-                                if(i != 0 && i % game.width) { nextTile(i - 1, &game); }
-                                if(i != game.wh - 1 && (i + 1) % game.width != 0) { nextTile(i + 1, &game); }
+                                nextTile(i, &game);
                             }
 
                             else { game.field[i] = (float)num;}
@@ -165,7 +163,7 @@ int main(int argc, char** argv)
 
                                 char tmp[10];
 
-                                snprintf(tmp, sizeof(tmp),"%f", (double)(game.endTime - game.startTime));
+                                snprintf(tmp, sizeof(tmp),"T:%f", (double)(game.endTime - game.startTime));
 
                                 /* CLEAN victory */
 
@@ -174,6 +172,14 @@ int main(int argc, char** argv)
                                     if(tmp[t] == '.') 
                                     {
                                         ui.time.text_data[t] = FONT_DOT;
+                                    }
+                                    else if(tmp[t] == 'T')
+                                    {
+                                        ui.time.text_data[t] = FONT_T;
+                                    }
+                                    else if(tmp[t] == ':')
+                                    {
+                                        ui.time.text_data[t] = FONT_CL;
                                     }
                                     else if(tmp[t] >= '0' && tmp[t] <= '9')
                                     {
@@ -198,18 +204,15 @@ int main(int argc, char** argv)
                 glfwGetCursorPos(window, &xpos, &ypos);
 
                 float fieldz = (float)game.width;
-                float fieldx = 0.0f;
-                float fieldy = 0.0f;
 
-                vec2 m = {(xpos - 320.f) / (320.f), (ypos - 240.f) / (240.f)};
+                vec2 m = {(xpos - screen[0] / 2.f) / (screen[0] / 2.f), (ypos - screen[1] / 2.f) / (screen[1] / 2.f)};
 
                 for(unsigned int i = 0; i < game.wh; ++i)
                 {
                     float j = (float)i;
 
-                    vec2 a = {((-0.5f + (j - fieldz * floorf(j / fieldz)) + fieldx) * view[3] - view[0]) / view[2] , (-0.5 - floorf(j / fieldz) + fieldy + view[1]) / view[2] };
-                    vec2 b = {((0.5f + (j - fieldz * floorf(j / fieldz)) + fieldx) * view[3] - view[0]) / view[2] , (0.5 - floorf(j / fieldz) + fieldy + view[1]) / view[2]  };
-
+                    vec2 a = {((-0.5f + (j - fieldz * floorf(j / fieldz))) * view[3] - view[0]) / view[2] , (-0.5 - floorf(j / fieldz) + view[1]) / view[2] };
+                    vec2 b = {((0.5f + (j - fieldz * floorf(j / fieldz))) * view[3] - view[0]) / view[2] , (0.5 - floorf(j / fieldz) + view[1]) / view[2]  };
 
                     if(inSquare(m, a, b)) 
                     {
@@ -245,29 +248,29 @@ int main(int argc, char** argv)
         {
             glUseProgram(ui.bgShader);
             glBindVertexArray(ui.elementVAO);
+            glUniform1f(ui.shaderLocation[3], view[3]);
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
             glUseProgram(ui.textShader);
             glBindVertexArray(ui.textVAO);
 
+            glUniform1f(ui.shaderLocation[2], view[3]);
             for(unsigned int i = 0; i < (sizeof(ui.inputs)/sizeof(*ui.inputs)); ++i)
             {
-
-                glUniform4fv(ui.shaderLocation[0], 1, ui.inputs[i].info);
+                glUniform3fv(ui.shaderLocation[0], 1, ui.inputs[i].info);
                 glUniform1fv(ui.shaderLocation[1], 6, ui.inputs[i].input_data);
 
                 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 6);
             }
 
-            glUniform4fv(ui.shaderLocation[0], 1, ui.time.info);
+            glUniform3fv(ui.shaderLocation[0], 1, ui.time.info);
             glUniform1fv(ui.shaderLocation[1], 6, ui.time.text_data);
 
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 6);
 
-
             glfwSwapBuffers(window);
 
-            if(glfwGetKey(window, GLFW_KEY_ESCAPE)) { game.state = 3; }
+            if(glfwGetKey(window, GLFW_KEY_ESCAPE)) { game.state = 4; }
         }
 
         glfwPollEvents();
@@ -335,7 +338,10 @@ unsigned int ftou(float* v, unsigned int l)
 
 void window_size_callback(GLFWwindow* window, int x, int y)
 {
-    view[3] = x / (float)y;
+    screen[0] = (float)x;
+    screen[1] = (float)y;
+
+    view[3] = screen[1] / screen[0];
 
     glViewport(0,0, x, y);
 }

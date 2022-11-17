@@ -59,6 +59,8 @@ UI initUI(const char* s1, const size_t fs_offset1, const unsigned int d_size1, c
 
     ui.shaderLocation[0] = glGetUniformLocation(ui.textShader, "info");
     ui.shaderLocation[1] = glGetUniformLocation(ui.textShader, "text");
+    ui.shaderLocation[2] = glGetUniformLocation(ui.textShader, "wdh");
+    ui.shaderLocation[3] = glGetUniformLocation(ui.bgShader, "wdh");
 
     memset(&ui.inputs[0], 0, sizeof(ui.inputs[0]));
     memset(&ui.inputs[1], 0, sizeof(ui.inputs[1]));
@@ -88,7 +90,6 @@ UI initUI(const char* s1, const size_t fs_offset1, const unsigned int d_size1, c
     ui.inputs[0].info[0] = 0.022f;
     ui.inputs[0].info[1] = -0.025f;
     ui.inputs[0].info[2] = 7.0f;
-    ui.inputs[0].info[3] = 640.f/480.f;
 
     ui.inputs[1].info[0] = -0.6f;
     ui.inputs[1].info[1] = -0.025f;
