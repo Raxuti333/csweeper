@@ -8,12 +8,14 @@ import zlib
 
 # C compiler
 CC = "/usr/bin/gcc"
+CC_WIN = "/usr/bin/x86_64-w64-mingw32-gcc"
 
 # C compiler flags
-CFLAGS = "-O2 -march=native -I."
+CFLAGS = "-O2 -march=native -Iinclude -Itmp"
 
 # C libraries
 LFLAGS = "-lglfw -lGL -lGLU -lGLEW -lm -lz"
+LFLAGS_WIN = "-static -lglfw3 -lopengl32 -lgdi32 -lm -lz -Wl,-subsystem,windows"
 
 # C sources
 CSRC = "sources"
@@ -54,7 +56,8 @@ def build():
     cObjects = os.listdir(objectPath)
     stringfy : str = ""
     for obj in cObjects:
-        stringfy += " " + objectPath + '/' + obj
+        if obj.find('.o') != -1:
+            stringfy += " " + objectPath + '/' + obj
     cArgs : str = CC + " " + CFLAGS + " -o " + EXE + stringfy + " " + LFLAGS
     print(cArgs)
     subprocess.run(cArgs.split(' '), stdout=subprocess.PIPE)
@@ -114,14 +117,14 @@ def genShaderHeader(path: str):
 
         headerFile += "static const unsigned int " + folder.upper() + "_FS_OFFSET = " + hex(length).upper().replace('X', 'x') + ", " + folder.upper() + "_I_LENGTH = " + hex(len(s)).upper().replace('X', 'x') + ";\nstatic const unsigned char " + folder.upper() + "[] = { " + c + "};\n\n"
 
-    desc = open("shaders.h", "w")
+    desc = open(objectPath + "/shaders.h", "w")
     desc.write("#ifndef SHADER_H\n#define SHADER_H\n\n" + headerFile + "#endif")
     desc.close()
     return 1
 
 def genTextureHeader(path: str):
     img = Image.open(path)
-    atlas = open("atlas.h", "w")
+    atlas = open(objectPath + "/atlas.h", "w")
 
     buffer = list(img.getdata())
     x, y = img.size
@@ -156,25 +159,19 @@ def genTextureHeader(path: str):
     atlas.close()
     return 1
 
-def clean():
-    cObjects = os.listdir(objectPath)
-    for obj in cObjects:
-        os.remove(objectPath + '/' + obj)
-    os.rmdir(objectPath)
-    os.remove("shaders.h")
-    os.remove("textures.h")
-    os.remove(EXE)
-    exit()
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--threads", help="Cpu's used for compiling", type=int)
 parser.add_argument("--clean", help="Removes generated directories and files", action="store_true")
 parser.add_argument("--headers", help="Generates development headers", action="store_true")
+parser.add_argument("--win", help="Compiles for windows", action="store_true")
 args = parser.parse_args()
 
-if args.clean:
-    clean()
-elif args.headers:
+if args.win:
+    CC = CC_WIN
+    LFLAGS = LFLAGS_WIN
+    print("target platform windows")
+
+if args.headers:
     if genShaderHeader(SSRC + '/'):
         print("generated shaders.h")
     else: 
