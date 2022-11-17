@@ -171,7 +171,7 @@ int main(int argc, char** argv)
                 }
             }
 
-            if(game.state == GAME_STATE_SPECTATING && glfwGetKey(window, GLFW_KEY_ENTER)) { game.state = GAME_STATE_SPECTATING; }
+            if(game.state == GAME_STATE_SPECTATING && glfwGetKey(window, GLFW_KEY_ENTER)) { game.state = GAME_STATE_IN_MENU; }
 
             lastFrame_left = thisFrame_left;
             lastFrame_right = thisFrame_right;
