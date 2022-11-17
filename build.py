@@ -1,6 +1,7 @@
 from multiprocessing.pool import ThreadPool
 from PIL import Image
 import os
+import shutil
 import argparse
 import subprocess
 import time
@@ -163,6 +164,14 @@ def genTextureHeader(path: str):
     atlas.close()
     return 1
 
+def clean():
+    if os.path.exists(objectPath):
+        shutil.rmtree(objectPath)
+    if os.path.exists(EXE):
+        os.remove(EXE)
+    elif os.path.exists(EXE + '.exe'):
+        os.remove(EXE + '.exe')
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--threads", help="Cpu's used for compiling", type=int)
 parser.add_argument("--clean", help="Removes generated directories and files", action="store_true")
@@ -184,6 +193,8 @@ if args.headers:
         print("generated texture.h")
     else: 
         print("couldnt generate texture.h")
+elif args.clean:
+    clean()
 else:
     if args.threads != None and args.threads > 1:
         compileProcesses = args.threads
