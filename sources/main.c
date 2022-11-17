@@ -61,19 +61,19 @@ int main(int argc, char** argv)
     int lastFrame_left;
     int lastFrame_right;
 
-    while (!glfwWindowShouldClose(window) && game.state < 4)
+    while (!glfwWindowShouldClose(window) && game.state != GAME_STATE_EXITING)
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        /* if game.state == 2 in lobby */
-
-        if(game.state == 3)
+        if(game.state == GAME_STATE_STARTING)
         {
-            unsigned int width = ftou(ui.inputs[0].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data))), heigth = ftou(ui.inputs[1].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data))), mines = ftou(ui.inputs[2].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data)));
+            unsigned int width = ftou(ui.inputs[0].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data)));
+            unsigned int heigth = ftou(ui.inputs[1].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data)));
+            unsigned int mines = ftou(ui.inputs[2].input_data + 1, (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data)));
 
             if(!startGame(&game, width, heigth, mines)) { game.state = 2; }
         }
-        else if(game.state < 2)
+        else if(game.state < GAME_STATE_IN_MENU)
         {
             glUniform4fv(viewloc, 1, view);
 
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
             int thisFrame_left = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
             int thisFrame_right = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
 
-            if(game.state == 1 && thisFrame_left != GLFW_RELEASE && thisFrame_left != lastFrame_left)
+            if(game.state == GAME_STATE_PLAYING && thisFrame_left != GLFW_RELEASE && thisFrame_left != lastFrame_left)
             {
                 double xpos, ypos;
                 glfwGetCursorPos(window, &xpos, &ypos);
@@ -197,7 +197,7 @@ int main(int argc, char** argv)
                 }
             }
 
-            if(game.state == 1 && thisFrame_right != GLFW_RELEASE && thisFrame_right != lastFrame_right)
+            if(game.state == GAME_STATE_PLAYING && thisFrame_right != GLFW_RELEASE && thisFrame_right != lastFrame_right)
             {
                 double xpos, ypos;
                 glfwGetCursorPos(window, &xpos, &ypos);
@@ -238,7 +238,7 @@ int main(int argc, char** argv)
                 }
             }
 
-            if(game.state == 0 && glfwGetKey(window, GLFW_KEY_ENTER)) { game.state = 2; }
+            if(game.state == GAME_STATE_SPECTATING && glfwGetKey(window, GLFW_KEY_ENTER)) { game.state = 2; }
 
             lastFrame_left = thisFrame_left;
             lastFrame_right = thisFrame_right;
@@ -269,7 +269,7 @@ int main(int argc, char** argv)
 
             glfwSwapBuffers(window);
 
-            if(glfwGetKey(window, GLFW_KEY_ESCAPE)) { game.state = 4; }
+            if(glfwGetKey(window, GLFW_KEY_ESCAPE)) { game.state = GAME_STATE_EXITING; }
         }
 
         glfwPollEvents();

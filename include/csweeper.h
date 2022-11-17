@@ -26,6 +26,12 @@
 #define FONT_DOT        (float)0x10
 #define ARROW           (float)0x13
 
+#define GAME_STATE_PLAYING      0x1
+#define GAME_STATE_SPECTATING   0x0
+#define GAME_STATE_IN_MENU      0x2
+#define GAME_STATE_STARTING     0x3
+#define GAME_STATE_EXITING      0x4
+
 typedef struct Game 
 {
     /*width of minefield*/
