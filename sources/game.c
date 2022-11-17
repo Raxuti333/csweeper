@@ -79,11 +79,12 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
     game->uniformLocations[0] = glGetUniformLocation(game->shader, "camera");
     game->uniformLocations[1] = glGetUniformLocation(game->shader, "field");
 
+    /* set game data */
     game->heigth = heigth;
     game->width = width;
     game->wh = width * heigth;
     game->mines = mines;
-    game->state = 1;
+    game->state = GAME_STATE_PLAYING;
 
     /* x y position */
     game->camera[0] = 0.f;
@@ -92,17 +93,19 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
     /* Zoom*/
     game->camera[2] = 10.f;
 
+    /* check for valid game data */
     if(game->wh <= mines) { fputs("width * height <= mines\n", stderr); return 0;}
     if(game->wh > RAND_MAX) { fputs("width * height > RAND_MAX\n", stderr); return 0; }
+    if(game->mines == 0) { fputs("mines == 0", stderr); return 0; }
 
+    if(game->field != NULL) { free(game->field); game->field = NULL; }
     game->field = malloc(game->wh * sizeof(*game->field));
     if(game->field == NULL) { fputs("in function startGame(): game->field = malloc(game->wh * sizeof(*game->field)); failed", stderr); return 0; }
 
-    for(unsigned int i = 0; i < game->wh; ++i)
-    {
-        game->field[i] = CLOSED_TILE;
-    }
+    /* set all tiles to closed tiles */
+    for(unsigned int i = 0; i < game->wh; ++i) { game->field[i] = CLOSED_TILE; }
 
+    /* set random tiles as mines */
     for(unsigned int c = 0; c < mines; ++c)
     {
         unsigned int index = rand() % game->wh;
@@ -117,7 +120,8 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
 
     glBindBuffer(GL_ARRAY_BUFFER, game->instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * game->wh, game->field, GL_DYNAMIC_DRAW);
-
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
     game->startTime = time(NULL);
 
     return 1;
