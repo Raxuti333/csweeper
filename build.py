@@ -32,6 +32,8 @@ EXE = "csweep"
 
 RESOURCE = "info"
 
+ICON = "icon.ico"
+
 # Object file build path
 objectPath = "tmp"
 
@@ -181,8 +183,44 @@ def clean_exe():
     if os.path.exists(EXE + '.exe'):
         os.remove(EXE + '.exe')
 
-def genResource():
+def genWindows():
     subprocess.run(["windres", RESOURCE + ".rc", "-O", "coff", RESOURCE + ".res"], stdout=subprocess.PIPE)
+    
+    if not os.path.exists(objectPath):
+        os.mkdir(objectPath)
+
+    img = Image.open(ICON)
+    atlas = open(objectPath + "/icon.h", "w")
+
+    buffer = list(img.getdata())
+    x, y = img.size
+
+    tmp = []
+    for rgb in buffer:
+        if len(rgb) == 4:
+            for i in range(4):
+                tmp.append(rgb[i])
+        else:
+            if rgb[0] == 255 and rgb[1] == 255 and rgb[2] == 255:
+                tmp.append(0)
+                tmp.append(0)
+                tmp.append(0)
+                tmp.append(0)
+            else:
+                tmp.append(rgb[0])
+                tmp.append(rgb[1])
+                tmp.append(rgb[2])
+                tmp.append(255)
+
+    compressed = zlib.compress(bytes(tmp))
+
+    c = ""
+    for b in compressed:
+        c += hex(b).upper().replace('X', 'x') +", "
+
+    data = "static const unsigned int ICON_WIDTH = " + hex(x).upper().replace('X', 'x') + ", ICON_HEIGTH = " + hex(y).upper().replace('X', 'x') + ";\nstatic const unsigned char ICON[] = { " + c + "}; \n\n"
+
+    atlas.write("#ifndef ICON_H\n#define ICON_H\n\n" + data + "#endif");
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--threads", help="Cpu's used for compiling", type=int)
@@ -194,7 +232,7 @@ args = parser.parse_args()
 if args.win:
     CC = CC_WIN
     LFLAGS = LFLAGS_WIN
-    genResource()
+    genWindows()
     print("target platform windows")
 
 if args.headers:

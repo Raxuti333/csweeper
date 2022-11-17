@@ -4,6 +4,10 @@
 
 #include "csweeper.h"
 
+#ifdef _WIN32
+#include "icon.h"
+#endif
+
 vec2 screen = {640.f, 480.f};
 
 Game game;
@@ -23,6 +27,15 @@ int main(int argc, char** argv)
 
     window = glfwCreateWindow(640, 480, "c-sweeper", NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
+
+    #ifdef _WIN32
+    /* decompress icon from icon.h */
+    GLFWimage icon = {.width = ICON_WIDTH, .height = ICON_HEIGTH, decompress(ICON, sizeof(ICON), ICON_WIDTH * ICON_HEIGTH * 4U)};
+
+    /* set icon as window icon */
+    glfwSetWindowIcon(window, 1, &icon);
+
+    #endif
 
     glfwMakeContextCurrent(window);
 
