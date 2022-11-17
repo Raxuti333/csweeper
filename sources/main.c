@@ -1,6 +1,6 @@
 #include "glad/gl.h"
 #include <GLFW/glfw3.h>
-#include <cglm/cglm.h>
+#include <math.h>
 
 #include "csweeper.h"
 

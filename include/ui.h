@@ -1,7 +1,9 @@
 #ifndef UI_H
 #define UI_H
 
-#include <cglm/cglm.h>
+typedef float vec4[4];
+typedef float vec3[3];
+typedef float vec2[2];
 
 static const vec3 inputXYS[3] = {{0.022f, -0.025f, 7.0f}, {-0.6f, -0.025f, 7.0f}, {-0.2875f, -0.345f, 7.0f}};
 static const vec3 textXYS = {0.425f, 0.85f, 7.25f};
