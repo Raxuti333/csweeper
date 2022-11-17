@@ -28,11 +28,27 @@
 
 typedef struct Game 
 {
-    unsigned int width, heigth, wh, mines, state;
+    /*width of minefield*/
+    unsigned int width;
+
+    /*heigth of minefield*/
+    unsigned int heigth;
+
+    /*wh = width * heigth*/
+    unsigned int wh;
+
+    /* mine count */
+    unsigned int mines;
+
+    /*state of game*/
+    unsigned int state;
 
     unsigned int instanceVBO, squareVBO, squareVAO, shader;
+
+    /* mine field array*/
     float* field;
 
+    /* start and end time of game */
     time_t startTime, endTime;
 } Game;
 
@@ -70,7 +86,12 @@ unsigned int createShader(const char* source, const size_t fs_offset, const unsi
 
 /**
  * @brief 
- * Initialize game object
+ * initializes game struct
+ * @param source minefield shader compressed source
+ * @param fs_offset minefield fragment shader offset
+ * @param d_size compressed/deflated size
+ * @param i_size uncompressed/inflated size
+ * @return initialized game struct 
  */
 Game InitGame(const char* source, const size_t fs_offset, const unsigned int d_size, const unsigned int i_size);
 
@@ -95,27 +116,33 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
 
 /**
  * @brief 
- * 
- * @param i 
- * @param game 
- * @return int 
+ * checks tiles around i returns number of mines around tile
+ * @param i index of tile
+ * @param game pointer to game struct
+ * @return number of mines around tile
  */
 int checkTile(const unsigned int i, Game* game);
 
+/**
+ * @brief 
+ * checks tiles around and if tile is not surrounded by mines opens it runs nextTile() on the opened tile
+ * @param i index of tile
+ * @param game pointer to game struct
+ */
 void nextTile(const unsigned int i, Game* game);
 
 /**
  * @brief 
- * 
- * @param s1 
- * @param fs_offset1 
- * @param d_size1 
- * @param i_size1 
- * @param s2 
- * @param fs_offset2 
- * @param d_size2 
- * @param i_size2 
- * @return UI 
+ * initializes ui struct
+ * @param s1 background shader compressed sources
+ * @param fs_offset1 background fragment shader offset
+ * @param d_size1 compressed/deflated size
+ * @param i_size1 uncompressed/inflated size
+ * @param s2 text shader compressed sources
+ * @param fs_offset2 background fragment shader offset
+ * @param d_size2 compressed/deflated size
+ * @param i_size2 uncompressed/inflated size
+ * @return initialized UI struct
  */
 UI initUI(const char* s1, const size_t fs_offset1, const unsigned int d_size1, const unsigned int i_size1, const char* s2, const size_t fs_offset2, const unsigned int d_size2, const unsigned int i_size2);
 
