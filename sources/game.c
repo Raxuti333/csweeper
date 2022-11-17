@@ -121,7 +121,7 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
     glBindBuffer(GL_ARRAY_BUFFER, game->instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * game->wh, game->field, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
+
     game->startTime = time(NULL);
 
     return 1;
@@ -277,4 +277,89 @@ void nextTile(const unsigned int i, Game* game)
             game->field[j] = (float)num;
         }
     }
+}
+
+unsigned int isTileClicked(Game* game, vec2 mouse)
+{
+    for(unsigned int i = 0; i < game->wh; ++i)
+    {
+        float j = (float)i;
+        float w = (float)game->width;
+
+        vec2 a = {((-0.5f + (j - w * floorf(j / w))) * game->camera[3] - game->camera[0]) / game->camera[2] , (-0.5 - floorf(j / w) + game->camera[1]) / game->camera[2] };
+        vec2 b = {((0.5f + (j - w * floorf(j / w))) * game->camera[3] - game->camera[0]) / game->camera[2] , (0.5 - floorf(j / w) + game->camera[1]) / game->camera[2]  };
+
+        if(a[0] < mouse[0] && a[1] < mouse[1] && b[0] > mouse[0] && b[1] > mouse[1])
+        {
+            if(game->field[i] == OPEN_TILE) { break; }
+
+            return i;
+        }
+    }
+
+    return (-1U);
+}
+
+void openTile(Game* game, const unsigned int i)
+{
+    unsigned int num = checkTile(i, game);
+
+    if(!num) 
+    {
+        game->field[i] = OPEN_TILE; 
+
+        nextTile(i, game);
+    }
+
+    else { game->field[i] = (float)num;}
+
+    int cleared = 0;
+
+    /* loop trough tiles */
+    for(unsigned int i = 0; i < game->wh; ++i)
+    {
+        if(game->field[i] == CLOSED_TILE || game->field[i] == FLAG) { ++cleared; }
+    }
+
+    /* if cleared is 0 all mines have been found*/
+    if(cleared == 0)
+    {
+        game->state = GAME_STATE_IN_MENU;
+        game->endTime = time(NULL);
+
+        char tmp[10];
+
+        snprintf(tmp, sizeof(tmp),"T:%f", (double)(game->endTime - game->startTime));
+
+        for(unsigned int t = 0; t < 6; ++t)
+        {
+            if(tmp[t] == '.') 
+            {
+                game->menu.time.text_data[t] = FONT_DOT;
+            }
+            else if(tmp[t] == 'T')
+            {
+                game->menu.time.text_data[t] = FONT_T;
+            }
+            else if(tmp[t] == ':')
+            {
+                game->menu.time.text_data[t] = FONT_CL;
+            }
+            else if(tmp[t] >= '0' && tmp[t] <= '9')
+            {
+                game->menu.time.text_data[t] = (float)(tmp[t] - '0');
+            }
+        }
+    }
+}
+
+void gameFailed(Game* game)
+{
+    for(unsigned int i = 0; i < game->wh; ++i)
+    {
+        if(game->field[i] < 0) { game->field[i] = MINE; }
+    }
+
+    game->state = GAME_STATE_SPECTATING;
+    game->endTime = 0;
 }
