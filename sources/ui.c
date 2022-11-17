@@ -68,12 +68,15 @@ UI initUI(const char* s1, const size_t fs_offset1, const unsigned int d_size1, c
 
     memset(&ui.time, 0, sizeof(ui.time));
 
+    memcpy(ui.time.XYS, textXYS, sizeof(textXYS));
+
     for(unsigned int i = 0; i < (sizeof(ui.inputs)/sizeof(*ui.inputs)); ++i)
     {
         for(unsigned int j = 0; j < (sizeof(ui.inputs[0].input_data)/sizeof(*ui.inputs[0].input_data)); ++j)
         {
             ui.inputs[i].input_data[j] = FONT_CL;
         }
+        memcpy(ui.inputs[i].XYS, inputXYS[i], sizeof(*inputXYS));
     }
 
     ui.inputs[0].i = 1;
@@ -84,24 +87,6 @@ UI initUI(const char* s1, const size_t fs_offset1, const unsigned int d_size1, c
     
     ui.inputs[2].i = 1;
     ui.inputs[2].input_data[0] = OPEN_TILE;
-
-    /* set ui text positions */
-
-    ui.inputs[0].info[0] = 0.022f;
-    ui.inputs[0].info[1] = -0.025f;
-    ui.inputs[0].info[2] = 7.0f;
-
-    ui.inputs[1].info[0] = -0.6f;
-    ui.inputs[1].info[1] = -0.025f;
-    ui.inputs[1].info[2] = 7.0f;
-
-    ui.inputs[2].info[0] = -0.2875f;
-    ui.inputs[2].info[1] = -0.345f;
-    ui.inputs[2].info[2] = 7.0f;
-
-    ui.time.info[0] = 0.425f;
-    ui.time.info[1] = 0.85f;
-    ui.time.info[2] = 7.25f;
 
     return ui;
 }

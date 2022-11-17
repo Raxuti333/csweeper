@@ -256,13 +256,13 @@ int main(int argc, char** argv)
             glUniform1f(ui.shaderLocation[2], view[3]);
             for(unsigned int i = 0; i < (sizeof(ui.inputs)/sizeof(*ui.inputs)); ++i)
             {
-                glUniform3fv(ui.shaderLocation[0], 1, ui.inputs[i].info);
+                glUniform3fv(ui.shaderLocation[0], 1, ui.inputs[i].XYS);
                 glUniform1fv(ui.shaderLocation[1], 6, ui.inputs[i].input_data);
 
                 glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 6);
             }
 
-            glUniform3fv(ui.shaderLocation[0], 1, ui.time.info);
+            glUniform3fv(ui.shaderLocation[0], 1, ui.time.XYS);
             glUniform1fv(ui.shaderLocation[1], 6, ui.time.text_data);
 
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 6);
