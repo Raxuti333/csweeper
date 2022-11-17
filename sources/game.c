@@ -55,6 +55,8 @@ void deleteGame(Game* game)
     glDeleteBuffers(1, &game->squareVBO);
     glDeleteBuffers(1, &game->instanceVBO);
 
+    glDeleteProgram(game->shader);
+
     if(game->field != NULL) { free(game->field); game->field = NULL; }
 }
 
