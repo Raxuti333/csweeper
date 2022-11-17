@@ -5,7 +5,7 @@
 
 #include "csweeper.h"
 
-Game InitGame(const char* source, const size_t fs_offset, const unsigned int d_size, const unsigned int i_size)
+Game InitGame(const char* source, const size_t fs_offset, const unsigned int d_size, const unsigned int i_size, vec2 screen)
 {
     srand(time(NULL));
 
@@ -25,6 +25,16 @@ Game InitGame(const char* source, const size_t fs_offset, const unsigned int d_s
     game.state = 2;
     game.shader = createShader(source, fs_offset, d_size, i_size);
     game.field = NULL;
+    
+    /* x y position */
+    game.camera[0] = 0.f;
+    game.camera[1] = 0.f;
+
+    /* Zoom*/
+    game.camera[2] = 10.f;
+
+    /* aspect ratio*/
+    game.camera[3] = screen[1] / screen[0];
 
     glGenBuffers(1, &game.instanceVBO);
 

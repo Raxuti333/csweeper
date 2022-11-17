@@ -4,8 +4,6 @@
 
 #include "csweeper.h"
 
-vec4 view = {0.0f, 0.0f, 10.f, 480.f/640.f};
-
 vec2 screen = {640.f, 480.f};
 
 Game game;
@@ -37,7 +35,7 @@ int main(int argc, char** argv)
 
     unsigned int atlas = createAtlas(ATLAS, ATLAS_WIDTH, ATLAS_HEIGTH, sizeof(ATLAS));
 
-    game = InitGame(FIELD, FIELD_FS_OFFSET, sizeof(FIELD), FIELD_I_LENGTH);
+    game = InitGame(FIELD, FIELD_FS_OFFSET, sizeof(FIELD), FIELD_I_LENGTH, screen);
     game.menu = initUI(BACKGROUND, BACKGROUND_FS_OFFSET, sizeof(BACKGROUND), BACKGROUND_I_LENGTH, TEXT, TEXT_FS_OFFSET, sizeof(TEXT), TEXT_I_LENGTH);
 
     glfwSetScrollCallback(window, scroll_callback);
@@ -74,7 +72,7 @@ int main(int argc, char** argv)
         }
         else if(game.state < GAME_STATE_IN_MENU)
         {
-            glUniform4fv(viewloc, 1, view);
+            glUniform4fv(viewloc, 1, game.camera);
 
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, game.wh);
 
@@ -88,8 +86,8 @@ int main(int argc, char** argv)
                 if(lastMouse[0] == 0 && lastMouse[1] == 0);
                 else
                 {
-                    view[0] -= ((xpos - lastMouse[0]) / 50.f) / (screen[0] / 300.f);
-                    view[1] += ((ypos - lastMouse[1]) / 50.f) / (screen[1] / 300.f);
+                    game.camera[0] -= ((xpos - lastMouse[0]) / 50.f) / (screen[0] / 300.f);
+                    game.camera[1] += ((ypos - lastMouse[1]) / 50.f) / (screen[1] / 300.f);
                 }
 
                 lastMouse[0] = xpos;
@@ -118,8 +116,8 @@ int main(int argc, char** argv)
                 {
                     float j = (float)i;
 
-                    vec2 a = {((-0.5f + (j - fieldz * floorf(j / fieldz))) * view[3] - view[0]) / view[2] , (-0.5 - floorf(j / fieldz) + view[1]) / view[2] };
-                    vec2 b = {((0.5f + (j - fieldz * floorf(j / fieldz))) * view[3] - view[0]) / view[2] , (0.5 - floorf(j / fieldz) + view[1]) / view[2]  };
+                    vec2 a = {((-0.5f + (j - fieldz * floorf(j / fieldz))) * game.camera[3] - game.camera[0]) / game.camera[2] , (-0.5 - floorf(j / fieldz) + game.camera[1]) / game.camera[2] };
+                    vec2 b = {((0.5f + (j - fieldz * floorf(j / fieldz))) * game.camera[3] - game.camera[0]) / game.camera[2] , (0.5 - floorf(j / fieldz) + game.camera[1]) / game.camera[2]  };
 
                     if(inSquare(m, a, b)) 
                     {
@@ -209,8 +207,8 @@ int main(int argc, char** argv)
                 {
                     float j = (float)i;
 
-                    vec2 a = {((-0.5f + (j - fieldz * floorf(j / fieldz))) * view[3] - view[0]) / view[2] , (-0.5 - floorf(j / fieldz) + view[1]) / view[2] };
-                    vec2 b = {((0.5f + (j - fieldz * floorf(j / fieldz))) * view[3] - view[0]) / view[2] , (0.5 - floorf(j / fieldz) + view[1]) / view[2]  };
+                    vec2 a = {((-0.5f + (j - fieldz * floorf(j / fieldz))) * game.camera[3] - game.camera[0]) / game.camera[2] , (-0.5 - floorf(j / fieldz) + game.camera[1]) / game.camera[2] };
+                    vec2 b = {((0.5f + (j - fieldz * floorf(j / fieldz))) * game.camera[3] - game.camera[0]) / game.camera[2] , (0.5 - floorf(j / fieldz) + game.camera[1]) / game.camera[2]  };
 
                     if(inSquare(m, a, b)) 
                     {
@@ -246,13 +244,13 @@ int main(int argc, char** argv)
         {
             glUseProgram(game.menu.bgShader);
             glBindVertexArray(game.menu.elementVAO);
-            glUniform1f(game.menu.shaderLocation[3], view[3]);
+            glUniform1f(game.menu.shaderLocation[3], game.camera[3]);
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
             glUseProgram(game.menu.textShader);
             glBindVertexArray(game.menu.textVAO);
 
-            glUniform1f(game.menu.shaderLocation[2], view[3]);
+            glUniform1f(game.menu.shaderLocation[2], game.camera[3]);
             for(unsigned int i = 0; i < (sizeof(game.menu.inputs)/sizeof(*game.menu.inputs)); ++i)
             {
                 glUniform3fv(game.menu.shaderLocation[0], 1, game.menu.inputs[i].XYS);
@@ -284,8 +282,8 @@ int main(int argc, char** argv)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    view[2] += yoffset;
-    if(view[2] < 0.5f) { view[2] = 0.5f; }
+    game.camera[2] += yoffset;
+    if(game.camera[2] < 0.5f) { game.camera[2] = 0.5f; }
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -341,7 +339,7 @@ void window_size_callback(GLFWwindow* window, int x, int y)
     screen[0] = (float)x;
     screen[1] = (float)y;
 
-    view[3] = screen[1] / screen[0];
+    game.camera[3] = screen[1] / screen[0];
 
     glViewport(0,0, x, y);
 }

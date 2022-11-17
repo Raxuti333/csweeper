@@ -34,19 +34,19 @@
 
 typedef struct Game 
 {
-    /*width of minefield*/
+    /* width of minefield */
     unsigned int width;
 
-    /*heigth of minefield*/
+    /* heigth of minefield */
     unsigned int heigth;
 
-    /*wh = width * heigth*/
+    /* wh = width * heigth */
     unsigned int wh;
 
     /* mine count */
     unsigned int mines;
 
-    /*state of game*/
+    /* state of game */
     unsigned int state;
 
     unsigned int instanceVBO, squareVBO, squareVAO, shader;
@@ -58,6 +58,8 @@ typedef struct Game
     time_t startTime, endTime;
 
     UI menu;
+
+    vec4 camera;
 } Game;
 
 /**
@@ -101,7 +103,7 @@ unsigned int createShader(const char* source, const size_t fs_offset, const unsi
  * @param i_size uncompressed/inflated size
  * @return initialized game struct 
  */
-Game InitGame(const char* source, const size_t fs_offset, const unsigned int d_size, const unsigned int i_size);
+Game InitGame(const char* source, const size_t fs_offset, const unsigned int d_size, const unsigned int i_size, vec2 screen);
 
 /**
  * @brief 
