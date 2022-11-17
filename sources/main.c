@@ -276,7 +276,8 @@ int main(int argc, char** argv)
     }
 
     deleteGame(&game);
-    
+    deleteUi(&ui);
+
     gladLoaderUnloadGL();
 
     glfwTerminate();

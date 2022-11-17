@@ -90,3 +90,16 @@ UI initUI(const char* s1, const size_t fs_offset1, const unsigned int d_size1, c
 
     return ui;
 }
+
+void deleteUi(UI* ui)
+{
+    if(ui == NULL) { return; }
+
+    glDeleteProgram(ui->bgShader);
+    glDeleteProgram(ui->textShader);
+
+    glDeleteVertexArrays(1, &ui->elementVBO);
+    glDeleteVertexArrays(1, &ui->textVAO);
+    glDeleteBuffers(1, &ui->elementVBO);
+    glDeleteBuffers(1, &ui->textVBO);
+}

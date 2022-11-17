@@ -146,4 +146,11 @@ void nextTile(const unsigned int i, Game* game);
  */
 UI initUI(const char* s1, const size_t fs_offset1, const unsigned int d_size1, const unsigned int i_size1, const char* s2, const size_t fs_offset2, const unsigned int d_size2, const unsigned int i_size2);
 
+/**
+ * @brief 
+ * deletes initialized ui struct
+ * @param ui pointer to UI struct
+ */
+void deleteUi(UI* ui);
+
 #endif
