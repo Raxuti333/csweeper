@@ -6,6 +6,7 @@
 
 #ifdef _WIN32
 #include "icon.h"
+#include <stdlib.h>
 #endif
 
 vec2 screen = {640.f, 480.f};
@@ -35,6 +36,7 @@ int main(int argc, char** argv)
     /* set icon as window icon */
     glfwSetWindowIcon(window, 1, &icon);
 
+    free(icon.pixels);
     #endif
 
     glfwMakeContextCurrent(window);
