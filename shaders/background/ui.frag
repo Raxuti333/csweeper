@@ -10,3 +10,4 @@ void main()
 {
     color = texture(atlas, coord);
 }
+
