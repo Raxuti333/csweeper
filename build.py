@@ -33,7 +33,7 @@ EXE = "csweep"
 objectPath = "tmp"
 
 # Cpu's used for compiling
-compileProcesses = 5
+compileProcesses = 2
 
 def build():
     start_time = time.time()
@@ -83,6 +83,8 @@ def compileObj(sources):
         subprocess.run(cArgs.split(' '), stdout=subprocess.PIPE)
 
 def genShaderHeader(path: str):
+    if not os.path.exists(objectPath):
+        os.mkdir(objectPath)
     dir = os.listdir(path)
 
     headerFile = ""
@@ -123,6 +125,8 @@ def genShaderHeader(path: str):
     return 1
 
 def genTextureHeader(path: str):
+    if not os.path.exists(objectPath):
+        os.mkdir(objectPath)
     img = Image.open(path)
     atlas = open(objectPath + "/atlas.h", "w")
 
