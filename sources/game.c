@@ -49,6 +49,8 @@ Game InitGame(const char* source, const size_t fs_offset, const unsigned int d_s
 
 void deleteGame(Game* game)
 {
+    if(game == NULL) { return; }
+
     glDeleteVertexArrays(1, &game->squareVAO);
     glDeleteBuffers(1, &game->squareVBO);
     glDeleteBuffers(1, &game->instanceVBO);
