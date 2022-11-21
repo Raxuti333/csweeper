@@ -137,14 +137,6 @@ int checkTile(const unsigned int i, Game* game);
 
 /**
  * @brief 
- * checks tiles around and if tile is not surrounded by mines opens it runs nextTile() on the opened tile
- * @param i index of tile
- * @param game pointer to game struct
- */
-void nextTile(const unsigned int i, Game* game);
-
-/**
- * @brief 
  * initializes ui struct
  * @param s1 background shader compressed sources
  * @param fs_offset1 background fragment shader offset
@@ -189,5 +181,13 @@ void gameFailed(Game* game);
  * @param i index of tile
  */
 void openTile(Game* game, const unsigned int i);
+
+/**
+ * @brief 
+ * returns a pseudo random 32bit unsigned integer
+ * @param number non 0 seed value
+ * @return random number 
+ */
+unsigned int random32(unsigned int number);
 
 #endif
