@@ -101,8 +101,8 @@ int main(int argc, char** argv)
                 if(lastMouse[0] == 0 && lastMouse[1] == 0);
                 else
                 {
-                    game.camera[0] -= ((xpos - lastMouse[0]) / 50.f) / (screen[0] / 300.f);
-                    game.camera[1] += ((ypos - lastMouse[1]) / 50.f) / (screen[1] / 300.f);
+                    game.camera[0] -= ((xpos - lastMouse[0]) / 50.f) / game.camera[3];
+                    game.camera[1] += ((ypos - lastMouse[1]) / 50.f) / game.camera[3];
                 }
 
                 lastMouse[0] = xpos;
