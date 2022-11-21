@@ -75,6 +75,8 @@ void deleteGame(Game* game)
 
 int startGame(Game* game, const unsigned int width, const unsigned int heigth, const unsigned int mines)
 {
+    unsigned int seed = random32(time(NULL));
+
     glUseProgram(game->shader);
 
     game->uniformLocations[0] = glGetUniformLocation(game->shader, "camera");
@@ -96,7 +98,6 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
 
     /* check for valid game data */
     if(game->wh <= mines) { fputs("width * height <= mines\n", stderr); return 0;}
-    if(game->wh > RAND_MAX) { fputs("width * height > RAND_MAX\n", stderr); return 0; }
     if(game->mines == 0) { fputs("mines == 0", stderr); return 0; }
 
     if(game->field != NULL) { free(game->field); game->field = NULL; }
@@ -109,10 +110,12 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
     /* set random tiles as mines */
     for(unsigned int c = 0; c < mines; ++c)
     {
-        unsigned int index = rand() % game->wh;
+        seed = random32(seed);
 
-        if(game->field[index] < 0) { --c;  continue; }
-        game->field[index] *= -1.f; 
+        unsigned int index = seed % game->wh;
+
+        if(game->field[index] < 0) { --c; continue; }
+        game->field[index] *= -1.f;
     }
 
     glUniform2f(game->uniformLocations[1], (float)width, (float)heigth);
