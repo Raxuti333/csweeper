@@ -118,6 +118,11 @@ int main(int argc, char** argv)
             int thisFrame_left = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
             int thisFrame_right = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
 
+            if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)   { game.camera[1] += 0.1f; }
+            if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) { game.camera[1] -= 0.1f; }
+            if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { game.camera[0] -= 0.1f; }
+            if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){ game.camera[0] += 0.1f; }
+            
             /* left click tile */
             if(game.state == GAME_STATE_PLAYING && thisFrame_left != GLFW_RELEASE && thisFrame_left != lastFrame_left)
             {
