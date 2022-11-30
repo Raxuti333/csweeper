@@ -77,9 +77,9 @@ int main(int argc, char** argv)
 
         if(game.state == GAME_STATE_STARTING)
         {
-            unsigned int width = ftou(game.menu.inputs[0].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)));
-            unsigned int heigth = ftou(game.menu.inputs[1].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)));
-            unsigned int mines = ftou(game.menu.inputs[2].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)));
+            unsigned int width = ftou(game.menu.inputs[0].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)) - 1UL);
+            unsigned int heigth = ftou(game.menu.inputs[1].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)) - 1UL);
+            unsigned int mines = ftou(game.menu.inputs[2].input_data + 1, (sizeof(game.menu.inputs[0].input_data)/sizeof(*game.menu.inputs[0].input_data)) - 1UL);
 
             if(!startGame(&game, width, heigth, mines)) { game.state = GAME_STATE_IN_MENU; }
         }
