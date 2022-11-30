@@ -16,7 +16,7 @@ CFLAGS = "-O2 -march=native -Iinclude -Itmp"
 
 # C libraries
 LFLAGS = "-lglfw -lGL -lGLU -lm -lz"
-LFLAGS_WIN = "-static -lglfw3 -lopengl32 -lgdi32 -lm -lz -Wl,-subsystem,windows"
+LFLAGS_WIN = "-Wl,-Bstatic -lglfw3 -lz -Wl,-Bdynamic -lopengl32 -lgdi32 -lm -Wl,-subsystem,windows"
 
 # C sources
 CSRC = "sources"
