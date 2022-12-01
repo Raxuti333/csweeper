@@ -57,7 +57,11 @@ typedef struct Game
     float* field;
 
     /* start and end time of game */
-    time_t startTime, endTime;
+#ifdef _WIN32
+    struct timeval startTime, endTime;
+#else 
+    struct timespec startTime, endTime;
+#endif
 
     UI menu;
 

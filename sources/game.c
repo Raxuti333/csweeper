@@ -4,6 +4,10 @@
 #include <time.h>
 #include <math.h>
 
+#ifdef _WIN32
+#include <sys/time.h>
+#endif
+
 #include "csweeper.h"
 
 Game InitGame(const char* source, const size_t fs_offset, const unsigned int d_size, const unsigned int i_size, vec2 screen)
@@ -126,7 +130,11 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * game->wh, game->field, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    game->startTime = time(NULL);
+#ifdef _WIN32
+    gettimeofday(&game->startTime, NULL);
+#else
+    clock_gettime(CLOCK_MONOTONIC_RAW, &game->startTime);
+#endif
 
     return 1;
 }
@@ -340,12 +348,18 @@ void openTile(Game* game, const unsigned int i)
     /* if cleared is 0 all mines have been found*/
     if(cleared == 0)
     {
-        game->state = GAME_STATE_IN_MENU;
-        game->endTime = time(NULL);
-
         char tmp[10];
+        game->state = GAME_STATE_IN_MENU;
 
-        snprintf(tmp, sizeof(tmp),"T:%f", (double)(game->endTime - game->startTime));
+#ifdef _WIN32
+        gettimeofday(&game->endTime, NULL);
+        double time_second = (double)(((game->endTime.tv_sec - game->startTime.tv_sec) * 1000000 + game->endTime.tv_usec - game->startTime.tv_usec) / 1000000);
+#else
+        clock_gettime(CLOCK_MONOTONIC_RAW, &game->endTime);
+        double time_second = (double)(((game->endTime.tv_sec - game->startTime.tv_sec) * 1000000 + (game->endTime.tv_nsec - game->startTime.tv_nsec) / 1000)) / 1000000;
+#endif
+
+        snprintf(tmp, sizeof(tmp),"T:%f", time_second);
 
         for(unsigned int t = 0; t < 6; ++t)
         {
@@ -377,5 +391,4 @@ void gameFailed(Game* game)
     }
 
     game->state = GAME_STATE_SPECTATING;
-    game->endTime = 0;
 }
