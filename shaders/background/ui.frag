@@ -1,4 +1,4 @@
-#version 450 core
+#version 450
 
 in vec2 coord;
 
