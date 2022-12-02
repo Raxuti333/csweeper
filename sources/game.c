@@ -5,7 +5,7 @@
 #include <math.h>
 
 #ifdef _WIN32
-#include <sys/time.h>
+#include <windows.h>
 #endif
 
 #include "csweeper.h"
@@ -131,7 +131,7 @@ int startGame(Game* game, const unsigned int width, const unsigned int heigth, c
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 #ifdef _WIN32
-    gettimeofday(&game->startTime, NULL);
+    game->startTime = GetTickCount64();
 #else
     clock_gettime(CLOCK_MONOTONIC_RAW, &game->startTime);
 #endif
@@ -352,11 +352,11 @@ void openTile(Game* game, const unsigned int i)
         game->state = GAME_STATE_IN_MENU;
 
 #ifdef _WIN32
-        gettimeofday(&game->endTime, NULL);
-        double time_second = (double)(((game->endTime.tv_sec - game->startTime.tv_sec) * 1000000 + game->endTime.tv_usec - game->startTime.tv_usec) / 1000000);
+        game->endTime = GetTickCount64();
+        double time_second = (double)(game->endTime - game->startTime) / 1000.0;
 #else
         clock_gettime(CLOCK_MONOTONIC_RAW, &game->endTime);
-        double time_second = (double)(((game->endTime.tv_sec - game->startTime.tv_sec) * 1000000 + (game->endTime.tv_nsec - game->startTime.tv_nsec) / 1000)) / 1000000;
+        double time_second = (double)(((game->endTime.tv_sec - game->startTime.tv_sec) * 1000000 + (game->endTime.tv_nsec - game->startTime.tv_nsec) / 1000)) / 1000000.0;
 #endif
 
         snprintf(tmp, sizeof(tmp),"T:%f", time_second);

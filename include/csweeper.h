@@ -4,7 +4,10 @@
 #include "atlas.h"
 #include "shaders.h"
 #include "ui.h"
+
+#ifndef _WIN32
 #include <time.h>
+#endif
 
 /* ATLAS INDEXES */
 #define FONT_0          (float)0x0
@@ -58,7 +61,7 @@ typedef struct Game
 
     /* start and end time of game */
 #ifdef _WIN32
-    struct timeval startTime, endTime;
+    unsigned long startTime, endTime;
 #else 
     struct timespec startTime, endTime;
 #endif
