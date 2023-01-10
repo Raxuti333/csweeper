@@ -91,8 +91,6 @@ int main(int argc, char** argv)
 
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, game.wh);
 
-            glfwSwapBuffers(window);
-
             if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
             {
                 double xpos, ypos;
@@ -213,11 +211,11 @@ int main(int argc, char** argv)
 
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 6);
 
-            glfwSwapBuffers(window);
-
             if(glfwGetKey(window, GLFW_KEY_ESCAPE)) { game.state = GAME_STATE_EXITING; }
         }
 
+        glfwSwapBuffers(window);
+        
         glfwPollEvents();
     }
 
