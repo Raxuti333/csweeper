@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <math.h>
 
+#include <stdio.h>
+
 #include "csweeper.h"
 
 #ifdef _WIN32
@@ -98,11 +100,14 @@ int main(int argc, char** argv)
                 double xpos, ypos;
                 glfwGetCursorPos(window, &xpos, &ypos);
 
+                xpos = (xpos - (screen[0] / 2.f)) / (screen[0] / 2.f);
+                ypos = (ypos - (screen[1] / 2.f)) / (screen[1] / 2.f);
+
                 if(lastMouse[0] == 0 && lastMouse[1] == 0);
                 else
                 {
-                    game.camera[0] -= ((xpos - lastMouse[0]) / 50.f) / game.camera[3];
-                    game.camera[1] += ((ypos - lastMouse[1]) / 50.f) / game.camera[3];
+                    game.camera[0] -= (xpos - lastMouse[0]) / game.camera[3];
+                    game.camera[1] += (ypos - lastMouse[1]) / game.camera[3];
                 }
 
                 lastMouse[0] = xpos;
