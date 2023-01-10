@@ -2,8 +2,6 @@
 #include <GLFW/glfw3.h>
 #include <math.h>
 
-#include <stdio.h>
-
 #include "csweeper.h"
 
 #ifdef _WIN32
