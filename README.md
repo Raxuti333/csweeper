@@ -1,5 +1,10 @@
 # c-sweeper
 
+## Images
+
+[in menu](https://github.com/Raxuti333/csweeper/blob/master/menu_view_win.png?raw=true)
+[in game](https://github.com/Raxuti333/csweeper/blob/master/game_view_win.png?raw=true)
+
 ## Building
 
 ### Dependencies
